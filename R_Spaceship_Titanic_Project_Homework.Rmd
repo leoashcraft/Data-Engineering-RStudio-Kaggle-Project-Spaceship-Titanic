@@ -1,0 +1,53 @@
+# **Spaceship Titanic Project**
+
+Loading data
+
+```{r}
+spaceship.train <- read_csv('train.csv')
+spaceship.test <- read_csv('test.csv')
+```
+
+Merging data
+
+```{r}
+spaceship.train$IsTrainSet <- TRUE
+spaceship.test$IsTrainSet <- FALSE
+spaceship.test$Transported <- NA
+names(spaceship.train)
+names(spaceship.test)
+spaceship.full <- rbind(spaceship.train, spaceship.test)
+```
+
+Checking merged data
+
+```{r}
+spaceship.full %>%
+  View()
+```
+
+Creating subset of specific chosen dataset and viewing it
+
+```{r}
+
+s <- subset(spaceship.full, subset = !is.na(Age) & Age > 0 & HomePlanet == 'Earth' & Destination == '55 Cancri e' & Transported == TRUE)
+
+s['Age_group']=''
+s[s['Age']<=12,'Age_Group']='Age_0-12'
+s[(s['Age']>12) & (s['Age']<18),'Age_Group']='Age_13-17'
+s[(s['Age']>=18) & (s['Age']<=25),'Age_Group']='Age_18-25'
+s[(s['Age']>25) & (s['Age']<=30),'Age_Group']='Age_26-30'
+s[(s['Age']>30) & (s['Age']<=50),'Age_Group']='Age_31-50'
+s[s['Age']>50,'Age_Group']='Age_51+'
+ggplot(s) +
+  geom_bar(aes(x = Age_Group, y = after_stat(count)), fill = 'lightblue') +
+  scale_x_discrete(labels=c("0 - 12", "13 - 17", "18 - 25", "26 - 30", "31 - 50", "51+")) +
+  labs(title = "Earth to 55 Cancri e Transports",
+              subtitle = "Bar Chart by Age Group",
+              caption = "Data source: Kaggle - Spaceship Titanic",
+              x = "Age Group", y = "Count",
+              tag = waiver())
+```
+
+```         
+The majority of those aboard the Spaceship Titanic that originated from Earth and were transported to 55 Cancri e were within the 18 - 25 year old age group. Following those were the 31 - 50 year old age group. Coming at no surprise, those in the 51 and older age group were the least transported to 55 Cancri e.
+```
